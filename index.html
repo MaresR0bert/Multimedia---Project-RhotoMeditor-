@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>RhotoMeditor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="uploader">
+        <input id="fileBrowser" type="file" accept="image/*">
+    </div>
+    <div class="mainCanvas">
+        <canvas id="canvasImage"></canvas>
+    </div>
+    <div class="effectButtons">
+        <div id="emptySpace"></div>
+        <button id="cropButton" class="efxButton">Perform Crop</button>
+        <button id="eraserButton" class="efxButton">Eraser</button>
+        <button id="blackandwhiteButton" class="efxButton">Black&White</button>
+        <button id="thresHoldButton" class="efxButton">ThreshHold</button>
+        <button id="sepiaButton" class="efxButton">Sepia</button>
+        <button id="invertButton" class="efxButton">Invert</button>
+        <br>
+        <button id="lightenButton" class="efxButton">Lighten</button>
+        <input type="range" min="0" max="100" value="0" class="slider" id="lightenSlider">
+        <button id="darkenButton" class="efxButton">Darken</button>
+        <input type="range" min="0" max="100" value="0" class="slider" id="darkenSlider">
+        <br>
+        <br>
+        <label class="labelTransparent">Input your Text: </label>
+        <input type="text" id="textInput">
+        <br>
+        <label class="labelTransparent">Text Size</label>
+        <input type="range" min ="0" max="100" class="slider" id="textSizeSlider">
+        <br>
+        <label class="labelTransparent">Color:</label>
+        <br>
+        <label class="labelTransparent">Red:</label>
+        <input type="range" min ="0" max="255" class="colorSlider" id="redSlider">
+        <br>
+        <label class="labelTransparent">Green:</label>
+        <input type="range" min ="0" max="255" class="colorSlider" id="greenSlider">
+        <br>
+        <label class="labelTransparent">Blue:</label>
+        <input type="range" min ="0" max="255" class="colorSlider" id="blueSlider">
+        <br>
+        <canvas id="colorShow"></canvas>
+    </div>
+    <br>
+    <div class="downloadButton">
+        <button id="btnDownload" href="#">Download</button>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
