@@ -14,6 +14,15 @@ var defValHig = canvasImage.height;
 
 var editToggle = true;
 
+function drawEdits(imageData,x1,y1,x2,y2){
+    const visualCanvasContext = canvasImage.getContext("2d");
+    let minx = x1 < x2 ? x1 : x2;
+    let miny = y1 < y2 ? y1 : y2;
+    visualCanvasContext.putImageData(imageData, minx, miny);
+
+    editToggle = false;
+}
+
 document.addEventListener("dragover", e => {
     e.preventDefault();
 })
@@ -142,12 +151,7 @@ eraseToggleButton.addEventListener("click", function (e) {
             data[i] = data[i+1] = data[i+2] = 255;
     }
 
-    const visualCanvasContext = canvasImage.getContext("2d");
-    let minx = x1 < x2 ? x1 : x2;
-    let miny = y1 < y2 ? y1 : y2;
-    visualCanvasContext.putImageData(imageData, minx, miny);
-
-    editToggle = false;
+    drawEdits(imageData,x1,y1,x2,y2);
 });
 
 blackandwhteToggleButton.addEventListener("click", function (e) {
@@ -161,12 +165,7 @@ blackandwhteToggleButton.addEventListener("click", function (e) {
         }
     }
 
-    const visualCanvasContext = canvasImage.getContext("2d");
-    let minx = x1 < x2 ? x1 : x2;
-    let miny = y1 < y2 ? y1 : y2;
-    visualCanvasContext.putImageData(imageData, minx, miny);
-
-    editToggle = false;
+    drawEdits(imageData,x1,y1,x2,y2);
 });
 
 thresHoldButton.addEventListener("click", function (e) {
@@ -183,12 +182,7 @@ thresHoldButton.addEventListener("click", function (e) {
             data[i] = data[i + 1] = data[i + 2] = v;
         }
 
-    const visualCanvasContext = canvasImage.getContext("2d");
-    let minx = x1 < x2 ? x1 : x2;
-    let miny = y1 < y2 ? y1 : y2;
-    visualCanvasContext.putImageData(imageData, minx, miny);
-
-    editToggle = false;
+    drawEdits(imageData,x1,y1,x2,y2);
 });
 
 sepiaButton.addEventListener("click", function (e) {
@@ -206,12 +200,7 @@ sepiaButton.addEventListener("click", function (e) {
             data[i + 2] = (r * .272) + (g * .534) + (b * .131);
         }
 
-    const visualCanvasContext = canvasImage.getContext("2d");
-    let minx = x1 < x2 ? x1 : x2;
-    let miny = y1 < y2 ? y1 : y2;
-    visualCanvasContext.putImageData(imageData, minx, miny);
-
-    editToggle = false;
+    drawEdits(imageData,x1,y1,x2,y2);
 });
 
 invertButton.addEventListener("click", function (e) {
@@ -229,12 +218,7 @@ invertButton.addEventListener("click", function (e) {
             data[i + 2] = 255 - data[i + 2];
         }
 
-    const visualCanvasContext = canvasImage.getContext("2d");
-    let minx = x1 < x2 ? x1 : x2;
-    let miny = y1 < y2 ? y1 : y2;
-    visualCanvasContext.putImageData(imageData, minx, miny);
-
-    editToggle = false;
+    drawEdits(imageData,x1,y1,x2,y2);
 });
 
 lightenButton.addEventListener('click', function (e) {
@@ -251,12 +235,7 @@ lightenButton.addEventListener('click', function (e) {
         }
     }
 
-    const visualCanvasContext = canvasImage.getContext("2d");
-    let minx = x1 < x2 ? x1 : x2;
-    let miny = y1 < y2 ? y1 : y2;
-    visualCanvasContext.putImageData(imageData, minx, miny);
-
-    editToggle = false;
+    drawEdits(imageData,x1,y1,x2,y2);
 });
 
 darkenButton.addEventListener("click", function (e) {
@@ -273,12 +252,7 @@ darkenButton.addEventListener("click", function (e) {
         }
     }
 
-    const visualCanvasContext = canvasImage.getContext("2d");
-    let minx = x1 < x2 ? x1 : x2;
-    let miny = y1 < y2 ? y1 : y2;
-    visualCanvasContext.putImageData(imageData, minx, miny);
-
-    editToggle = false;
+    drawEdits(imageData,x1,y1,x2,y2);
 });
 
 pixalationSlider.addEventListener("change", function (e) {
@@ -310,12 +284,7 @@ pixalationSlider.addEventListener("change", function (e) {
         }
     }
 
-    const visualCanvasContext = canvasImage.getContext("2d");
-    let minx = x1 < x2 ? x1 : x2;
-    let miny = y1 < y2 ? y1 : y2;
-    visualCanvasContext.putImageData(imageData, minx, miny);
-
-    editToggle = false;
+    drawEdits(imageData,x1,y1,x2,y2);
 })
 
 
@@ -356,3 +325,4 @@ for (let i = 0; i < colorSlider.length; i++) {
         colorShowContext.fillRect(0, 0, colorShow.width, colorShow.height);
     })
 }
+
