@@ -9,8 +9,10 @@ var x1 = 0;
 var y1 = 0;
 var x2 = canvasImage.width;
 var y2 = canvasImage.height;
+var defValWid = canvasImage.width;
+var defValHig = canvasImage.height;
 
-var editToggle = false;
+var editToggle = true;
 
 document.addEventListener("dragover", e => {
     e.preventDefault();
@@ -39,10 +41,14 @@ document.addEventListener("drop", e => {
                 }
                 let context = canvasImage.getContext("2d");
                 context.drawImage(imageVar, 0, 0, canvasImage.width, canvasImage.height);
-                dummySwitch = true;
             });
         })
         fileReader.readAsDataURL(file[0]);
+        editToggle = true;
+        x1 = 0;
+        y1 = 0;
+        x2 = defValWid;
+        y2 = defValHig;
     }
 });
 
@@ -69,10 +75,14 @@ fileBrowser.addEventListener("change", ev => {
             }
             let context = canvasImage.getContext("2d");
             context.drawImage(imageVar, 0, 0, canvasImage.width, canvasImage.height);
-            dummySwitch = true;
         });
     })
     fileReader.readAsDataURL(file[0]);
+    editToggle = true;
+    x1 = 0;
+    y1 = 0;
+    x2 = defValWid;
+    y2 = defValHig;
 });
 
 let cropToggleButton = document.getElementById("cropButton");
@@ -94,10 +104,8 @@ let invertButton = document.getElementById("invertButton");
 let lightenButton = document.getElementById("lightenButton");
 
 let darkenButton = document.getElementById("darkenButton");
-darkenButton.addEventListener("click", function (e) {
-    if (darkenToggle) darkenToggle = false;
-    else darkenToggle = true;
-})
+
+let pixalationSlider = document.getElementById("pixalationSlider");
 
 canvasImage.addEventListener("mousedown", function (e) {
     let canvasOrigin = canvasImage.getBoundingClientRect();
@@ -112,7 +120,7 @@ canvasImage.addEventListener("mouseup", function (e) {
     y2 = e.y - canvasOrigin.top;
     console.log("mouseup values: " + x2 + " " + y2);
     console.log("new values: " + x1 + " " + y1 + " " + x2 + " " + y2);
-    
+
     editToggle = true;
 
     canvasContext.beginPath();
@@ -156,11 +164,11 @@ blackandwhteToggleButton.addEventListener("click", function (e) {
     editToggle = false;
 });
 
-thresHoldButton.addEventListener("click",function(e){
+thresHoldButton.addEventListener("click", function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
 
-    if (editToggle) 
+    if (editToggle)
         for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
             const g = data[i + 1];
@@ -178,11 +186,11 @@ thresHoldButton.addEventListener("click",function(e){
     editToggle = false;
 });
 
-sepiaButton.addEventListener("click", function(e){
+sepiaButton.addEventListener("click", function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
 
-    if (editToggle) 
+    if (editToggle)
         for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
             const g = data[i + 1];
@@ -201,11 +209,11 @@ sepiaButton.addEventListener("click", function(e){
     editToggle = false;
 });
 
-invertButton.addEventListener("click", function(e){
+invertButton.addEventListener("click", function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
 
-    if (editToggle) 
+    if (editToggle)
         for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
             const g = data[i + 1];
@@ -224,11 +232,11 @@ invertButton.addEventListener("click", function(e){
     editToggle = false;
 });
 
-lightenButton.addEventListener('click', function(e){
+lightenButton.addEventListener('click', function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
 
-    if(editToggle){
+    if (editToggle) {
         const lightenSlider = document.getElementById("lightenSlider");
         let val = lightenSlider.value;
         for (let i = 0; i < data.length; i += 4) {
@@ -244,19 +252,56 @@ lightenButton.addEventListener('click', function(e){
     visualCanvasContext.putImageData(imageData, minx, miny);
 
     editToggle = false;
-})
+});
 
-darkenButton.addEventListener("click", function(e){
+darkenButton.addEventListener("click", function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
 
-    if(editToggle){
+    if (editToggle) {
         const darkenSlider = document.getElementById("darkenSlider");
         let val = darkenSlider.value;
         for (let i = 0; i < data.length; i += 4) {
             data[i] -= val;
             data[i + 1] -= val;
             data[i + 2] -= val;
+        }
+    }
+
+    const visualCanvasContext = canvasImage.getContext("2d");
+    let minx = x1 < x2 ? x1 : x2;
+    let miny = y1 < y2 ? y1 : y2;
+    visualCanvasContext.putImageData(imageData, minx, miny);
+
+    editToggle = false;
+});
+
+pixalationSlider.addEventListener("change", function (e) {
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+    let val = pixalationSlider.value;
+
+    if (editToggle) {
+        for (let i = 0; i < imageData.height; i += val) {
+
+            const offsetLiniiAnterioare = i * (imageData.width * 4);
+
+            for (let j = 0; j < imageData.width; j += val) {
+
+                let pij = j * 4 + offsetLiniiAnterioare;
+
+                const r = data[pij]; //red 
+                const g = data[pij + 1]; //green
+                const b = data[pij + 2]; //blue
+
+                for (let k = 0; k < val; k++)
+                    for (let l = 0; l < val; l++) {
+                        const kl = (i + k) * (imageData.width * 4) + (j + l) * 4;
+                        data[kl] = r;
+                        data[kl + 1] = g;
+                        data[kl + 2] = b;
+                    }
+            }
         }
     }
 
