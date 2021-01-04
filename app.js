@@ -165,6 +165,14 @@ let invertButton = document.getElementById("invertButton");
 let lightenButton = document.getElementById("lightenButton");
 let darkenButton = document.getElementById("darkenButton");
 let pixalationSlider = document.getElementById("pixalationSlider");
+let sketchButton = document.getElementById("sketchButton");
+let rednblue = document.getElementById('rednblue');
+let darkRoom = document.getElementById('darkRoom');
+let deuteranomaly = document.getElementById('deuteranomaly');
+let achromatopsia = document.getElementById('achromatopsia');
+let tritanomaly = document.getElementById('tritanomaly');
+let highContrast = document.getElementById('highcontrast');
+let protanopia = document.getElementById('protanopia');
 
 canvasImage.addEventListener("mousedown", function (e) {
     let canvasOrigin = canvasImage.getBoundingClientRect();
@@ -213,7 +221,6 @@ eraseToggleButton.addEventListener("click", function (e) {
             //data[i + 3] = 0;
             data[i] = data[i + 1] = data[i + 2] = 255;
     }
-
     drawEdits(imageData, x1, y1, x2, y2);
 });
 
@@ -221,13 +228,7 @@ blackandwhteToggleButton.addEventListener("click", function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
 
-    if (editToggle) {
-        for (let i = 0; i < data.length; i += 4) {
-            const average = (data[i] + data[i + 1] + data[i + 2]) / 3;
-            data[i] = data[i + 1] = data[i + 2] = average;
-        }
-    }
-
+    if (editToggle) for (let i = 0; i < data.length; i += 4) data[i] = data[i + 1] = data[i + 2] = (data[i] + data[i + 1] + data[i + 2]) / 3;
     drawEdits(imageData, x1, y1, x2, y2);
 });
 
@@ -318,6 +319,128 @@ darkenButton.addEventListener("click", function (e) {
     drawEdits(imageData, x1, y1, x2, y2);
 });
 
+sketchButton.addEventListener("click", function (e) {
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+
+    if (editToggle)
+        for (let i = 0; i < data.length; i += 4)
+            data[i] = data[i + 1] = data[i + 2] = (0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2] >= 100) ? 255 : 127;
+
+    drawEdits(imageData, x1, y1, x2, y2);
+});
+
+rednblue.addEventListener("click", function (e) {
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+
+    if (editToggle) {
+        for (let i = 0; i < data.length; i += 4) {
+            if (data[i] > data[i + 2]) {
+                data[i] = 127;
+                data[i + 1] = 0;
+                data[i + 2] = 0;
+            } else {
+                data[i] = 0;
+                data[i + 1] = 0;
+                data[i + 2] = 127;
+            }
+        }
+    }
+
+    drawEdits(imageData, x1, y1, x2, y2);
+});
+
+darkRoom.addEventListener('click',function(e){
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+
+    if (editToggle) {
+        for (let i = 0; i < data.length; i += 4) {
+            data[i]-=100;
+            data[i+1]=0;
+            data[i+2]=0;
+        }
+    }
+
+    drawEdits(imageData, x1, y1, x2, y2);
+});
+
+highContrast.addEventListener('click',function(e){
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+
+    if (editToggle) {
+        for (let i = 0; i < data.length; i += 4) {
+            if(data[i]>data[i+1] && data[i]>data[i+2]) data[i]=255;
+            if(data[i+1]>data[i] && data[i+1]>data[i+2]) data[i+1]=255;
+            if(data[i+2]>data[i+1] && data[i]<data[i+2]) data[i+2]=255;
+        }
+    }
+
+    drawEdits(imageData, x1, y1, x2, y2);
+});
+
+deuteranomaly.addEventListener('click', function(e){
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+
+    if (editToggle) {
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = (data[i]*.625)+(data[i+1]*.375);
+            data[i+1]=(data[i]*.7)+(data[i+1]*.3);
+            data[i+2]=(data[i+1]*.7)+(data[i+2]*.3);
+        }
+    }
+
+    drawEdits(imageData, x1, y1, x2, y2);
+});
+
+achromatopsia.addEventListener('click',function(e){
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+
+    if (editToggle) {
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = (data[i]*.299)+(data[i+1]*.587)+(data[i+2]*.114);
+            data[i+1]=(data[i]*.299)+(data[i+1]*.587)+(data[i+2]*.114);
+            data[i+2]=(data[i]*.299)+(data[i+1]*.587)+(data[i+2]*.114);
+        }
+    }
+
+    drawEdits(imageData, x1, y1, x2, y2);
+});
+
+tritanomaly.addEventListener('click',function(e){
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+
+    if (editToggle) {
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = (data[i]*.967)+(data[i+1]*.033)+(data[i+2]*0);
+            data[i+1]=(data[i]*0)+(data[i+1]*.733)+(data[i+2]*.267);
+            data[i+2]=(data[i]*0)+(data[i+1]*.183)+(data[i+2]*.817);
+        }
+    }
+
+    drawEdits(imageData, x1, y1, x2, y2);
+});
+
+protanopia.addEventListener('click',function(e){
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+
+    if (editToggle) {
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = (data[i]*.567)+(data[i+1]*.433)+(data[i+2]*0);
+            data[i+1]=(data[i]*.558)+(data[i+1]*.442)+(data[i+2]*0);
+            data[i+2]=(data[i]*0)+(data[i+1]*.242)+(data[i+2]*.758);
+        }
+    }
+
+    drawEdits(imageData, x1, y1, x2, y2);
+});
+
 pixalationSlider.addEventListener("change", function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
@@ -332,9 +455,9 @@ pixalationSlider.addEventListener("change", function (e) {
 
                 let pij = j * 4 + offsetLiniiAnterioare;
 
-                const r = data[pij]; //red 
-                const g = data[pij + 1]; //green
-                const b = data[pij + 2]; //blue
+                const r = data[pij];
+                const g = data[pij + 1];
+                const b = data[pij + 2];
 
                 for (let k = 0; k < val; k++)
                     for (let l = 0; l < val; l++) {
