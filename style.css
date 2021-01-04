@@ -99,3 +99,11 @@ html{
     background-color: transparent;
     height: 200px;
 }
+
+#histoDiv{
+    text-align: center;
+}
+
+#Histogram{
+    text-align: center;
+}

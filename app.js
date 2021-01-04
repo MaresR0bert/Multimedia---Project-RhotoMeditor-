@@ -14,13 +14,73 @@ var defValHig = canvasImage.height;
 
 var editToggle = true;
 
-function drawEdits(imageData,x1,y1,x2,y2){
+class BarChart {
+    constructor(canvas) {
+        this.canvas = canvas;
+    }
+    draw(values, showLabels = true) {
+        let context = this.canvas.getContext("2d");
+
+        context.fillStyle = "#dedede";
+        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        let maxValue = Math.max(...values);
+        let f = this.canvas.height / maxValue;
+
+        let rectW = this.canvas.width / values.length;
+        let rectWVisible = rectW * 0.9;
+
+        //context.strokeStyle = "green";
+        context.lineWidth = 2;
+        context.textAlign = "center";
+        context.font = "30px Arial";
+
+        for (let i = 0; i < values.length; i++) {
+
+            let rectH = values[i] * f * 0.9;
+
+            let rectX = rectW * i;
+            let rectY = this.canvas.height - rectH;
+
+            context.fillStyle = "#ff0000";
+            context.fillRect(rectX, rectY, rectWVisible, rectH);
+            //context.strokeRect(rectX, rectY, rectWVisible, rectH);
+            if (showLabels == true) {
+                context.strokeRect(rectX, rectY, rectWVisible, rectH);
+                context.fillStyle = "#000000";
+                context.fillText(values[i], rectX + rectWVisible / 2, rectY);
+            }
+        }
+    }
+}
+
+function drawHistoOfColors() {
+
+    let canvHisto = document.getElementById('Histogram');
+    let barChart = new BarChart(canvHisto);
+
+    let imageDataForHisto = canvasContext.getImageData(0, 0, canvasImage.width, canvasImage.height);
+    let data = imageDataForHisto.data;
+    let array = [];
+    for (let i = 0; i < 256; i++) {
+        array.push(0);
+    }
+    for (let i = 0; i < data.length; i += 4) {
+        let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        array[Math.round(avg)]++;
+    }
+
+    barChart.draw(array, false);
+}
+
+function drawEdits(imageData, x1, y1, x2, y2) {
     const visualCanvasContext = canvasImage.getContext("2d");
     let minx = x1 < x2 ? x1 : x2;
     let miny = y1 < y2 ? y1 : y2;
     visualCanvasContext.putImageData(imageData, minx, miny);
 
     editToggle = false;
+    drawHistoOfColors();
 }
 
 document.addEventListener("dragover", e => {
@@ -58,6 +118,7 @@ document.addEventListener("drop", e => {
         y1 = 0;
         x2 = defValWid;
         y2 = defValHig;
+        drawHistoOfColors();
     }
 });
 
@@ -92,6 +153,7 @@ fileBrowser.addEventListener("change", ev => {
     y1 = 0;
     x2 = defValWid;
     y2 = defValHig;
+    drawHistoOfColors();
 });
 
 let performCrop = document.getElementById("cropButton");
@@ -125,7 +187,7 @@ canvasImage.addEventListener("mouseup", function (e) {
     canvasContext.stroke();
 });
 
-performCrop.addEventListener("click", function(e){
+performCrop.addEventListener("click", function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
 
@@ -133,12 +195,13 @@ performCrop.addEventListener("click", function(e){
     let miny = y1 < y2 ? y1 : y2;
     let maxx = x1 > x2 ? x1 : x2;
     let maxy = y1 > y2 ? y1 : y2;
-    canvasImage.width = maxx-minx;
-    canvasImage.height = maxy-miny;
+    canvasImage.width = maxx - minx;
+    canvasImage.height = maxy - miny;
     const visualCanvasContext = canvasImage.getContext("2d");
-    visualCanvasContext.putImageData(imageData,0,0);
+    visualCanvasContext.putImageData(imageData, 0, 0);
 
-    editToggle=false;
+    editToggle = false;
+    drawHistoOfColors();
 })
 
 eraseToggleButton.addEventListener("click", function (e) {
@@ -148,10 +211,10 @@ eraseToggleButton.addEventListener("click", function (e) {
     if (editToggle) {
         for (let i = 0; i < data.length; i += 4)
             //data[i + 3] = 0;
-            data[i] = data[i+1] = data[i+2] = 255;
+            data[i] = data[i + 1] = data[i + 2] = 255;
     }
 
-    drawEdits(imageData,x1,y1,x2,y2);
+    drawEdits(imageData, x1, y1, x2, y2);
 });
 
 blackandwhteToggleButton.addEventListener("click", function (e) {
@@ -165,7 +228,7 @@ blackandwhteToggleButton.addEventListener("click", function (e) {
         }
     }
 
-    drawEdits(imageData,x1,y1,x2,y2);
+    drawEdits(imageData, x1, y1, x2, y2);
 });
 
 thresHoldButton.addEventListener("click", function (e) {
@@ -182,7 +245,7 @@ thresHoldButton.addEventListener("click", function (e) {
             data[i] = data[i + 1] = data[i + 2] = v;
         }
 
-    drawEdits(imageData,x1,y1,x2,y2);
+    drawEdits(imageData, x1, y1, x2, y2);
 });
 
 sepiaButton.addEventListener("click", function (e) {
@@ -200,7 +263,7 @@ sepiaButton.addEventListener("click", function (e) {
             data[i + 2] = (r * .272) + (g * .534) + (b * .131);
         }
 
-    drawEdits(imageData,x1,y1,x2,y2);
+    drawEdits(imageData, x1, y1, x2, y2);
 });
 
 invertButton.addEventListener("click", function (e) {
@@ -218,7 +281,7 @@ invertButton.addEventListener("click", function (e) {
             data[i + 2] = 255 - data[i + 2];
         }
 
-    drawEdits(imageData,x1,y1,x2,y2);
+    drawEdits(imageData, x1, y1, x2, y2);
 });
 
 lightenButton.addEventListener('click', function (e) {
@@ -235,7 +298,7 @@ lightenButton.addEventListener('click', function (e) {
         }
     }
 
-    drawEdits(imageData,x1,y1,x2,y2);
+    drawEdits(imageData, x1, y1, x2, y2);
 });
 
 darkenButton.addEventListener("click", function (e) {
@@ -252,7 +315,7 @@ darkenButton.addEventListener("click", function (e) {
         }
     }
 
-    drawEdits(imageData,x1,y1,x2,y2);
+    drawEdits(imageData, x1, y1, x2, y2);
 });
 
 pixalationSlider.addEventListener("change", function (e) {
@@ -284,7 +347,7 @@ pixalationSlider.addEventListener("change", function (e) {
         }
     }
 
-    drawEdits(imageData,x1,y1,x2,y2);
+    drawEdits(imageData, x1, y1, x2, y2);
 })
 
 
@@ -325,4 +388,3 @@ for (let i = 0; i < colorSlider.length; i++) {
         colorShowContext.fillRect(0, 0, colorShow.width, colorShow.height);
     })
 }
-
