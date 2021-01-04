@@ -85,26 +85,14 @@ fileBrowser.addEventListener("change", ev => {
     y2 = defValHig;
 });
 
-let cropToggleButton = document.getElementById("cropButton");
-cropToggleButton.addEventListener("click", function (e) {
-    if (cropToggle) cropToggle = false;
-    else cropToggle = true;
-});
-
+let performCrop = document.getElementById("cropButton");
 let eraseToggleButton = document.getElementById("eraserButton");
-
 let blackandwhteToggleButton = document.getElementById("blackandwhiteButton");
-
 let thresHoldButton = document.getElementById("thresHoldButton");
-
 let sepiaButton = document.getElementById("sepiaButton");
-
 let invertButton = document.getElementById("invertButton");
-
 let lightenButton = document.getElementById("lightenButton");
-
 let darkenButton = document.getElementById("darkenButton");
-
 let pixalationSlider = document.getElementById("pixalationSlider");
 
 canvasImage.addEventListener("mousedown", function (e) {
@@ -128,13 +116,30 @@ canvasImage.addEventListener("mouseup", function (e) {
     canvasContext.stroke();
 });
 
+performCrop.addEventListener("click", function(e){
+    const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
+    const data = imageData.data;
+
+    let minx = x1 < x2 ? x1 : x2;
+    let miny = y1 < y2 ? y1 : y2;
+    let maxx = x1 > x2 ? x1 : x2;
+    let maxy = y1 > y2 ? y1 : y2;
+    canvasImage.width = maxx-minx;
+    canvasImage.height = maxy-miny;
+    const visualCanvasContext = canvasImage.getContext("2d");
+    visualCanvasContext.putImageData(imageData,0,0);
+
+    editToggle=false;
+})
+
 eraseToggleButton.addEventListener("click", function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
 
     if (editToggle) {
         for (let i = 0; i < data.length; i += 4)
-            data[i + 3] = 0;
+            //data[i + 3] = 0;
+            data[i] = data[i+1] = data[i+2] = 255;
     }
 
     const visualCanvasContext = canvasImage.getContext("2d");
