@@ -106,4 +106,8 @@ html{
 
 #Histogram{
     text-align: center;
+    outline: 10px solid indigo;
+    outline-style: outset;
+    vertical-align: middle;
+    background-color: yellow;
 }

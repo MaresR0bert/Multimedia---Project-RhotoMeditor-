@@ -11,45 +11,29 @@ var x2 = canvasImage.width;
 var y2 = canvasImage.height;
 var defValWid = canvasImage.width;
 var defValHig = canvasImage.height;
-
 var editToggle = true;
 
-class BarChart {
+class verticalBar {
     constructor(canvas) {
-        this.canvas = canvas;
+        this.canvasCanv = canvas;
     }
-    draw(values, showLabels = true) {
-        let context = this.canvas.getContext("2d");
 
-        context.fillStyle = "#dedede";
-        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    draw(array) {
+        let contextCanv = this.canvasCanv.getContext("2d");
+        contextCanv.fillStyle = "yellow";
+        contextCanv.fillRect(0, 0, this.canvasCanv.width, this.canvasCanv.height);
+        let maxval = Math.max(...array);
+        let rectWidth = this.canvasCanv.width / array.length;
 
-        let maxValue = Math.max(...values);
-        let f = this.canvas.height / maxValue;
+        contextCanv.lineWidth = 6;
+        contextCanv.textAlign = "center";
 
-        let rectW = this.canvas.width / values.length;
-        let rectWVisible = rectW * 0.9;
-
-        //context.strokeStyle = "green";
-        context.lineWidth = 2;
-        context.textAlign = "center";
-        context.font = "30px Arial";
-
-        for (let i = 0; i < values.length; i++) {
-
-            let rectH = values[i] * f * 0.9;
-
-            let rectX = rectW * i;
-            let rectY = this.canvas.height - rectH;
-
-            context.fillStyle = "#ff0000";
-            context.fillRect(rectX, rectY, rectWVisible, rectH);
-            //context.strokeRect(rectX, rectY, rectWVisible, rectH);
-            if (showLabels == true) {
-                context.strokeRect(rectX, rectY, rectWVisible, rectH);
-                context.fillStyle = "#000000";
-                context.fillText(values[i], rectX + rectWVisible / 2, rectY);
-            }
+        for (let i = 0; i < array.length; i++) {
+            let rectHeight = array[i] * this.canvasCanv.height / maxval * 0.9;
+            let rectX = rectWidth * i;
+            let rectY = this.canvasCanv.height - rectHeight;
+            contextCanv.fillStyle = "red";
+            contextCanv.fillRect(rectX, rectY, rectWidth*0.8, rectHeight);
         }
     }
 }
@@ -57,20 +41,20 @@ class BarChart {
 function drawHistoOfColors() {
 
     let canvHisto = document.getElementById('Histogram');
-    let barChart = new BarChart(canvHisto);
+    let verticalBarVar = new verticalBar(canvHisto);
 
     let imageDataForHisto = canvasContext.getImageData(0, 0, canvasImage.width, canvasImage.height);
     let data = imageDataForHisto.data;
     let array = [];
     for (let i = 0; i < 256; i++) {
-        array.push(0);
+        array[i]=0;
     }
     for (let i = 0; i < data.length; i += 4) {
         let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
         array[Math.round(avg)]++;
     }
 
-    barChart.draw(array, false);
+    verticalBarVar.draw(array, false);
 }
 
 function drawEdits(imageData, x1, y1, x2, y2) {
@@ -110,6 +94,7 @@ document.addEventListener("drop", e => {
                 }
                 let context = canvasImage.getContext("2d");
                 context.drawImage(imageVar, 0, 0, canvasImage.width, canvasImage.height);
+                drawHistoOfColors();
             });
         })
         fileReader.readAsDataURL(file[0]);
@@ -118,7 +103,7 @@ document.addEventListener("drop", e => {
         y1 = 0;
         x2 = defValWid;
         y2 = defValHig;
-        drawHistoOfColors();
+        
     }
 });
 
@@ -145,6 +130,7 @@ fileBrowser.addEventListener("change", ev => {
             }
             let context = canvasImage.getContext("2d");
             context.drawImage(imageVar, 0, 0, canvasImage.width, canvasImage.height);
+            drawHistoOfColors();
         });
     })
     fileReader.readAsDataURL(file[0]);
@@ -153,7 +139,7 @@ fileBrowser.addEventListener("change", ev => {
     y1 = 0;
     x2 = defValWid;
     y2 = defValHig;
-    drawHistoOfColors();
+    
 });
 
 let performCrop = document.getElementById("cropButton");
@@ -190,9 +176,9 @@ canvasImage.addEventListener("mouseup", function (e) {
 
     editToggle = true;
 
-    canvasContext.beginPath();
-    canvasContext.rect(x1, y1, x2 - x1, y2 - y1);
-    canvasContext.stroke();
+    // canvasContext.beginPath();
+    // canvasContext.rect(x1, y1, x2 - x1, y2 - y1);
+    // canvasContext.stroke();
 });
 
 performCrop.addEventListener("click", function (e) {
@@ -485,6 +471,11 @@ canvasImage.addEventListener("dblclick", function (e) {
     canvasContext.font = textSizeSlider.value + "px Arial";
     canvasContext.fillStyle = 'rgb(' + redSlider.value + ',' + greenSlider.value + ',' + blueSlider.value + ')';
     canvasContext.fillText(textInput.value, e.x - canvasOrigin.left, e.y - canvasOrigin.top);
+
+    const imageData = canvasContext.getImageData(0, 0, canvasImage.width, canvasImage.height);
+    const data = imageData.data;
+
+    drawEdits(imageData,0, 0, canvasImage.width, canvasImage.height);
 })
 
 document.getElementById("btnDownload").addEventListener("click", function (e) {
