@@ -150,7 +150,6 @@ let sepiaButton = document.getElementById("sepiaButton");
 let invertButton = document.getElementById("invertButton");
 let lightenButton = document.getElementById("lightenButton");
 let darkenButton = document.getElementById("darkenButton");
-let pixalationSlider = document.getElementById("pixalationSlider");
 let sketchButton = document.getElementById("sketchButton");
 let rednblue = document.getElementById('rednblue');
 let darkRoom = document.getElementById('darkRoom');
@@ -159,6 +158,7 @@ let achromatopsia = document.getElementById('achromatopsia');
 let tritanomaly = document.getElementById('tritanomaly');
 let highContrast = document.getElementById('highcontrast');
 let protanopia = document.getElementById('protanopia');
+let blurButton = document.getElementById('blurButton');
 
 canvasImage.addEventListener("mousedown", function (e) {
     let canvasOrigin = canvasImage.getBoundingClientRect();
@@ -277,11 +277,12 @@ lightenButton.addEventListener('click', function (e) {
 
     if (editToggle) {
         const lightenSlider = document.getElementById("lightenSlider");
-        let val = lightenSlider.value;
+        let vallight = parseInt(lightenSlider.value);
+        console.log(vallight);
         for (let i = 0; i < data.length; i += 4) {
-            data[i] += val;
-            data[i + 1] += val;
-            data[i + 2] += val;
+            data[i] += vallight;
+            data[i + 1] += vallight;
+            data[i + 2] += vallight;
         }
     }
 
@@ -294,7 +295,7 @@ darkenButton.addEventListener("click", function (e) {
 
     if (editToggle) {
         const darkenSlider = document.getElementById("darkenSlider");
-        let val = darkenSlider.value;
+        let val = parseInt(darkenSlider.value);
         for (let i = 0; i < data.length; i += 4) {
             data[i] -= val;
             data[i + 1] -= val;
@@ -427,35 +428,25 @@ protanopia.addEventListener('click',function(e){
     drawEdits(imageData, x1, y1, x2, y2);
 });
 
-pixalationSlider.addEventListener("change", function (e) {
+blurButton.addEventListener("click", function (e) {
     const imageData = canvasContext.getImageData(x1, y1, x2 - x1, y2 - y1);
     const data = imageData.data;
-    let val = pixalationSlider.value;
 
-    if (editToggle) {
-        for (let i = 0; i < imageData.height; i += val) {
-
-            const offsetLiniiAnterioare = i * (imageData.width * 4);
-
-            for (let j = 0; j < imageData.width; j += val) {
-
-                let pij = j * 4 + offsetLiniiAnterioare;
-
-                const r = data[pij];
-                const g = data[pij + 1];
-                const b = data[pij + 2];
-
-                for (let k = 0; k < val; k++)
-                    for (let l = 0; l < val; l++) {
-                        const kl = (i + k) * (imageData.width * 4) + (j + l) * 4;
-                        data[kl] = r;
-                        data[kl + 1] = g;
-                        data[kl + 2] = b;
-                    }
+    if (editToggle) {    
+        let blurSlider = document.getElementById('blurSlider');
+        let valblur = parseInt(blurSlider.value)
+        for (let i = 0; i < data.length; i += valblur) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+    
+            for (let j = 0; j < valblur; j += 4) {
+                data[i + j] = r;
+                data[i + j + 1] = g;
+                data[i + j + 2] = b;
             }
         }
     }
-
     drawEdits(imageData, x1, y1, x2, y2);
 })
 
